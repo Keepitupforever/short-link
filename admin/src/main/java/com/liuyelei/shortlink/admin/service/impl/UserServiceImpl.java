@@ -25,7 +25,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (userDO == null) {
             throw new ClientException(UserErrorCodeEnum.USER_NULL);
         }
-
         UserRespDTO result = new UserRespDTO();
         BeanUtils.copyProperties(userDO, result);
         return result;
