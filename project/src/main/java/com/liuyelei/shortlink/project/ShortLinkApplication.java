@@ -1,11 +1,11 @@
-package com.liuyelei.shortlink.admin;
+package com.liuyelei.shortlink.project;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.liuyelei.shortlink.admin.dao.mapper")
+@MapperScan("com.liuyelei.shortlink.project.dao.mapper")
 public class ShortLinkApplication {
 
     public static void main(String[] args) {

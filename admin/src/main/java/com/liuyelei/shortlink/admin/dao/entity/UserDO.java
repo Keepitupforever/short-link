@@ -1,7 +1,7 @@
 package com.liuyelei.shortlink.admin.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.liuyelei.shortlink.admin.database.BaseDO;
+import com.liuyelei.shortlink.admin.common.database.BaseDO;
 import lombok.Data;
 
 /**

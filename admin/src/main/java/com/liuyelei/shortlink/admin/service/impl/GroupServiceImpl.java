@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liuyelei.shortlink.admin.common.biz.user.UserContext;
 import com.liuyelei.shortlink.admin.dao.entity.GroupDO;
 import com.liuyelei.shortlink.admin.dao.mapper.GroupMapper;
-import com.liuyelei.shortlink.admin.database.BaseDO;
+import com.liuyelei.shortlink.admin.common.database.BaseDO;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.liuyelei.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;

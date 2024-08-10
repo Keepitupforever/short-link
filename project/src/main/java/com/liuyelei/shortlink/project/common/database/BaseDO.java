@@ -1,4 +1,4 @@
-package com.liuyelei.shortlink.admin.database;
+package com.liuyelei.shortlink.project.common.database;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
