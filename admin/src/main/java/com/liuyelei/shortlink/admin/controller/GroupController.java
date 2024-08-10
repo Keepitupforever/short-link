@@ -3,6 +3,7 @@ package com.liuyelei.shortlink.admin.controller;
 import com.liuyelei.shortlink.admin.common.convention.result.Result;
 import com.liuyelei.shortlink.admin.common.convention.result.Results;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupSaveReqDTO;
+import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.liuyelei.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
 import com.liuyelei.shortlink.admin.service.GroupService;
@@ -30,7 +31,7 @@ public class GroupController {
     }
 
     /**
-     * 新增短链接分组集合
+     * 查询短链接分组集合
      */
     @GetMapping("/api/short-link/v1/group")
     public Result<List<ShortLinkGroupRespDTO>> listGroup() {
@@ -43,6 +44,15 @@ public class GroupController {
     @PutMapping("/api/short-link/v1/group")
     public Result<Void> updateGroup(@RequestBody ShortLinkGroupUpdateReqDTO requestParam) {
         groupService.updateGroup(requestParam);
+        return Results.success();
+    }
+
+    /**
+     * 修改短链接分组名称
+     */
+    @PostMapping("/api/short-link/v1/group/sort")
+    public Result<Void> sortGroup(@RequestBody List<ShortLinkGroupSortReqDTO> requestParam) {
+        groupService.sortGroup(requestParam);
         return Results.success();
     }
 }
