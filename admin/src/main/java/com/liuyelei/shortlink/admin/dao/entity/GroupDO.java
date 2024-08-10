@@ -55,5 +55,5 @@ public class GroupDO {
      */
     private Integer delFlag;
 
-    public TGroup() {}
+    public GroupDO() {}
 }
