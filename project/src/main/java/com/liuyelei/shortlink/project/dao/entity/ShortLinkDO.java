@@ -19,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @TableName("t_link")
 public class ShortLinkDO extends BaseDO {
+
     private Long id;
 
     /**
@@ -76,5 +77,10 @@ public class ShortLinkDO extends BaseDO {
      */
     @TableField("`describe`")
     private String describe;
+
+    /**
+     * 网站标识
+     */
+    private String favicon;
 
 }
