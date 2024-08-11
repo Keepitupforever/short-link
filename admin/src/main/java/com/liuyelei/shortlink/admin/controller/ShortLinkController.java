@@ -2,7 +2,7 @@ package com.liuyelei.shortlink.admin.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.liuyelei.shortlink.admin.common.convention.result.Result;
-import com.liuyelei.shortlink.admin.remote.dto.ShortLinkRemoteService;
+import com.liuyelei.shortlink.admin.remote.ShortLinkRemoteService;
 import com.liuyelei.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.liuyelei.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
 import com.liuyelei.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
@@ -39,4 +39,5 @@ public class ShortLinkController {
     Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
         return shortLinkRemoteService.pageShortLink(requestParam);
     }
+
 }
