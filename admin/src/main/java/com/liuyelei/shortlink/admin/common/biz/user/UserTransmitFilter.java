@@ -51,6 +51,7 @@ public class UserTransmitFilter implements Filter {
                     if (userInfoJsonStr == null) {
                         throw new ClientException(USER_TOKEN_FAIL);
                     }
+                    UserContext.setUser(JSON.parseObject(userInfoJsonStr.toString(), UserInfoDTO.class));
                 } catch (Exception ex) {
                     returnJson((HttpServletResponse) servletResponse, JSON.toJSONString(Results.failure(new ClientException(USER_TOKEN_FAIL))));
                     return;

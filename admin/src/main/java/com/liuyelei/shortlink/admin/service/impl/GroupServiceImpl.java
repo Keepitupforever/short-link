@@ -25,8 +25,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
+
     @Override
     public void saveGroup(String groupName) {
+
         String gid;
         do {
             gid = RandomGenerator.generateRandom();
