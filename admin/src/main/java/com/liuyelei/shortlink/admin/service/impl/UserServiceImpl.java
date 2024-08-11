@@ -15,6 +15,7 @@ import com.liuyelei.shortlink.admin.dto.req.UserRegisterReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.UserUpdateReqDTO;
 import com.liuyelei.shortlink.admin.dto.resp.UserLoginRespDTO;
 import com.liuyelei.shortlink.admin.dto.resp.UserRespDTO;
+import com.liuyelei.shortlink.admin.service.GroupService;
 import com.liuyelei.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
@@ -41,6 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RBloomFilter<String> userRegisterCachePenetrationBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
+    private final GroupService groupService;
 
     /**
      * 根据用户名查询用户
@@ -86,6 +88,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                 throw new ClientException(USER_SAVE_ERROR);
             }
             userRegisterCachePenetrationBloomFilter.add(requestParam.getUsername());
+            groupService.saveGroup("默认分组");
         } catch (DuplicateKeyException ex) {
             throw new ClientException(USER_EXIST);
         } finally {
