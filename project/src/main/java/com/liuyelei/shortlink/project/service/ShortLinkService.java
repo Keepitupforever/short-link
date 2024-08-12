@@ -9,6 +9,8 @@ import com.liuyelei.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.liuyelei.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.liuyelei.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.liuyelei.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
 import java.util.List;
 
@@ -16,6 +18,16 @@ import java.util.List;
  * 短链接服务接口层
  */
 public interface ShortLinkService extends IService<ShortLinkDO> {
+
+    /**
+     * 短链接跳转
+     *
+     * @param shortUri 短链接后缀
+     * @param request  HTTP 请求
+     * @param response HTTP 响应
+     */
+    void restoreUrl(String shortUri, ServletRequest request, ServletResponse response);
+
     /**
      * 创建短链接
      *
@@ -44,6 +56,5 @@ public interface ShortLinkService extends IService<ShortLinkDO> {
      * @return 查询短链接分组内数量响应
      */
     List<ShortLinkGroupCountQueryRespDTO> listGroupShortLinkCount(List<String> requestParam);
-
 
 }

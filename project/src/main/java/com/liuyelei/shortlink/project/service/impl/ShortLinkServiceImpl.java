@@ -12,6 +12,8 @@ import com.liuyelei.shortlink.project.common.convention.exception.ClientExceptio
 import com.liuyelei.shortlink.project.common.convention.exception.ServiceException;
 import com.liuyelei.shortlink.project.common.enums.VailDateTypeEnum;
 import com.liuyelei.shortlink.project.dao.entity.ShortLinkDO;
+import com.liuyelei.shortlink.project.dao.entity.ShortLinkGotoDO;
+import com.liuyelei.shortlink.project.dao.mapper.ShortLinkGotoMapper;
 import com.liuyelei.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.liuyelei.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.liuyelei.shortlink.project.dto.req.ShortLinkPageReqDTO;
@@ -21,7 +23,11 @@ import com.liuyelei.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.liuyelei.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.liuyelei.shortlink.project.service.ShortLinkService;
 import com.liuyelei.shortlink.project.toolkit.HashUtil;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBloomFilter;
 import org.springframework.dao.DuplicateKeyException;
@@ -42,6 +48,31 @@ import java.util.Objects;
 public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLinkDO> implements ShortLinkService {
 
     private final RBloomFilter<String> shortUriCreateCachePenetrationBloomFilter;
+    private final ShortLinkGotoMapper shortLinkGotoMapper;
+
+    @SneakyThrows
+    @Override
+    public void restoreUrl(String shortUri, ServletRequest request, ServletResponse response) {
+        String serverName = request.getServerName();
+        String fullShortUrl = serverName + "/" + shortUri;
+
+        LambdaQueryWrapper<ShortLinkGotoDO> linkGotoQueryWrapper = Wrappers.lambdaQuery(ShortLinkGotoDO.class)
+                .eq(ShortLinkGotoDO::getFullShortUrl, fullShortUrl);
+        ShortLinkGotoDO shortLinkGotoDO = shortLinkGotoMapper.selectOne(linkGotoQueryWrapper);
+        if (shortLinkGotoDO == null) {
+            // 此处需要进行风控
+            return;
+        }
+        LambdaQueryWrapper<ShortLinkDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkDO.class)
+                .eq(ShortLinkDO::getGid, shortLinkGotoDO.getGid())
+                .eq(ShortLinkDO::getFullShortUrl, fullShortUrl)
+                .eq(ShortLinkDO::getDelFlag, 0)
+                .eq(ShortLinkDO::getEnableStatus, 0);
+        ShortLinkDO shortLinkDO = baseMapper.selectOne(queryWrapper);
+        if (shortLinkDO != null) {
+            ((HttpServletResponse) response).sendRedirect(shortLinkDO.getOriginUrl());
+        }
+    }
 
     @Override
     public ShortLinkCreateRespDTO createShortLink(ShortLinkCreateReqDTO requestParam) {
@@ -62,8 +93,13 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .enableStatus(0)
                 .fullShortUrl(fullShortUrl)
                 .build();
+        ShortLinkGotoDO shortLinkGotoDO = ShortLinkGotoDO.builder()
+                .gid(requestParam.getGid())
+                .fullShortUrl(fullShortUrl)
+                .build();
         try {
             baseMapper.insert(shortLinkDO);
+            shortLinkGotoMapper.insert(shortLinkGotoDO);
         } catch (DuplicateKeyException ex) {
             if (!shortUriCreateCachePenetrationBloomFilter.contains(fullShortUrl)) {
                 shortUriCreateCachePenetrationBloomFilter.add(fullShortUrl);
