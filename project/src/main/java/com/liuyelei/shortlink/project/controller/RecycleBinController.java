@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.liuyelei.shortlink.project.common.convention.result.Result;
 import com.liuyelei.shortlink.project.common.convention.result.Results;
 import com.liuyelei.shortlink.project.dto.req.RecycleBinSaveReqDTO;
-import com.liuyelei.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.liuyelei.shortlink.project.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.liuyelei.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.liuyelei.shortlink.project.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class RecycleBinController {
      * 分页查询短链接
      */
     @GetMapping("/api/short-link/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
+    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
         return Results.success(recycleBinService.pageShortLink(requestParam));
     }
 }

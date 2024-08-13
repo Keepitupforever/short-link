@@ -1,4 +1,4 @@
-package com.liuyelei.shortlink.admin.remote.dto.req;
+package com.liuyelei.shortlink.admin.dto.req;
 
 import lombok.Data;
 

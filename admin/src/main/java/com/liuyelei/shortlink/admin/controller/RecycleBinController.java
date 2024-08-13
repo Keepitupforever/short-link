@@ -3,10 +3,11 @@ package com.liuyelei.shortlink.admin.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.liuyelei.shortlink.admin.common.convention.result.Result;
 import com.liuyelei.shortlink.admin.common.convention.result.Results;
+import com.liuyelei.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
 import com.liuyelei.shortlink.admin.remote.ShortLinkRemoteService;
-import com.liuyelei.shortlink.admin.remote.dto.req.RecycleBinSaveReqDTO;
-import com.liuyelei.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
+import com.liuyelei.shortlink.admin.remote.dto.req.ShortLinkRecycleBinPageReqDTO;
 import com.liuyelei.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
+import com.liuyelei.shortlink.admin.service.RecycleBinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class RecycleBinController {
+
+    private final RecycleBinService recycleBinService;
 
     /**
      * 后续重构为 SpringCloud Feign调用
@@ -39,7 +42,7 @@ public class RecycleBinController {
      * 分页查询回收站短链接
      */
     @GetMapping("/api/short-link/admin/v1/recycle-bin/page")
-    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
-        return shortLinkRemoteService.pageRecycleBinShortLink(requestParam);
+    public Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkRecycleBinPageReqDTO requestParam) {
+        return recycleBinService.pageRecycleBinShortLink(requestParam);
     }
 }
