@@ -19,14 +19,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liuyelei.shortlink.project.common.convention.exception.ClientException;
 import com.liuyelei.shortlink.project.common.convention.exception.ServiceException;
 import com.liuyelei.shortlink.project.common.enums.VailDateTypeEnum;
-import com.liuyelei.shortlink.project.dao.entity.LinkAccessStatsDO;
-import com.liuyelei.shortlink.project.dao.entity.LinkLocaleStatsDO;
-import com.liuyelei.shortlink.project.dao.entity.ShortLinkDO;
-import com.liuyelei.shortlink.project.dao.entity.ShortLinkGotoDO;
-import com.liuyelei.shortlink.project.dao.mapper.LinkAccessStatsMapper;
-import com.liuyelei.shortlink.project.dao.mapper.LinkLocaleStatsMapper;
-import com.liuyelei.shortlink.project.dao.mapper.ShortLinkGotoMapper;
-import com.liuyelei.shortlink.project.dao.mapper.ShortLinkMapper;
+import com.liuyelei.shortlink.project.dao.entity.*;
+import com.liuyelei.shortlink.project.dao.mapper.*;
 import com.liuyelei.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.liuyelei.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.liuyelei.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
@@ -80,6 +74,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
     private final RedissonClient redissonClient;
     private final LinkAccessStatsMapper linkAccessStatsMapper;
     private final LinkLocaleStatsMapper linkLocaleStatsMapper;
+    private final LinkOsStatsMapper linkOsStatsMapper;
 
     @Value("${short-link.stats.locale.amap-key}")
     private String statsLocaleAmapKey;
@@ -321,7 +316,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             String remoteAddr = LinkUtil.getActualIp((HttpServletRequest) request);
             Long uipAdded = stringRedisTemplate.opsForSet().add("short-link:stats:uip" + fullShortUrl, remoteAddr);
             boolean uipFirstFlag = uipAdded != null && uipAdded > 0L;
-
             int hour = DateUtil.hour(new Date(), true);
             Week week = DateUtil.dayOfWeekEnum(new Date());
             int weekValue = week.getIso8601Value();
@@ -336,6 +330,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                     .date(new Date())
                     .build();
             linkAccessStatsMapper.shortLinkStats(linkAccessStatsDO);
+            // 地区统计
             Map<String, Object> localeParam = new HashMap<>();
             localeParam.put("key", statsLocaleAmapKey);
             localeParam.put("ip", remoteAddr);
@@ -358,9 +353,15 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                         .build();
                 linkLocaleStatsMapper.shortLinkLocaleState(linkLocaleStatsDO);
             }
-
-
-
+            // 操作系统统计
+            LinkOsStatsDO linkOsStatsDO = LinkOsStatsDO.builder()
+                    .fullShortUrl(fullShortUrl)
+                    .gid(gid)
+                    .os(LinkUtil.getOs((HttpServletRequest) request))
+                    .cnt(1)
+                    .date(new Date())
+                    .build();
+            linkOsStatsMapper.insert(linkOsStatsDO);
         } catch (Throwable ex) {
             log.error("短链接访问数量统计异常", ex);
         }
