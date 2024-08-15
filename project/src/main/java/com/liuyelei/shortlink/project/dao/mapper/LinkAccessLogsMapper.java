@@ -93,6 +93,9 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
             ") AS user_counts;")
     HashMap<String, Object> findUvTypeCntByGroup(@Param("param") ShortLinkGroupStatsReqDTO requestParam);
 
+    /**
+     * 获取短链接用户信息是否新老访客
+     */
     @Select("SELECT " +
             "    user, " +
             "    CASE " +
@@ -111,6 +114,29 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
     List<Map<String, Object>> selectUvType(
             @Param("gid") String gid,
             @Param("fullShortUrl") String fullShortUrl,
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate
+    );
+
+    /**
+     * 获取分组用户信息是否新老访客
+     */
+    @Select("SELECT " +
+            "    user, " +
+            "    CASE " +
+            "        WHEN MIN(create_time) BETWEEN #{startDate} AND #{endDate} THEN '新访客' " +
+            "        ELSE '老访客' " +
+            "    END AS uvType " +
+            "FROM " +
+            "    t_link_access_logs " +
+            "WHERE " +
+            "    gid = #{gid} " +
+            "    AND del_flag = 0 " +
+            "GROUP BY " +
+            "    user;"
+    )
+    List<Map<String, Object>> selectGroupUvType(
+            @Param("gid") String gid,
             @Param("startDate") String startDate,
             @Param("endDate") String endDate
     );
@@ -147,4 +173,6 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
             "GROUP BY " +
             "    gid;")
     LinkAccessStatsDO findPvUvUidStatsByGroup(@Param("param") ShortLinkGroupStatsReqDTO requestParam);
+
+
 }
