@@ -19,5 +19,8 @@ public interface ShortLinkStatsService {
      */
     ShortLinkStatsRespDTO oneShortLinkStats(ShortLinkStatsReqDTO requestParam);
 
+    /**
+     * 短链接监控访问记录分页查询
+     */
     IPage<ShortLinkStatsAccessRecordRespDTO> shortLinkStatsAccessRecord(ShortLinkStatsAccessRecordReqDTO requestParam);
 }
