@@ -45,10 +45,11 @@ public interface ShortLinkRemoteService {
     default Result<IPage<ShortLinkPageRespDTO>> pageShortLink(ShortLinkPageReqDTO requestParam) {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("gid", requestParam.getGid());
+        requestMap.put("orderTag", requestParam.getOrderTag());
         requestMap.put("current", requestParam.getCurrent());
         requestMap.put("size", requestParam.getSize());
         String resultPage = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/page", requestMap);
-        return JSON.parseObject(resultPage, new TypeReference<Result<IPage<ShortLinkPageRespDTO>>>() {
+        return JSON.parseObject(resultPage, new TypeReference<>() {
         });
     }
 
@@ -61,7 +62,7 @@ public interface ShortLinkRemoteService {
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("requestParam", requestParam);
         String resultPage = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/count", requestMap);
-        return JSON.parseObject(resultPage, new TypeReference<Result<List<ShortLinkGroupCountQueryRespDTO>>>() {
+        return JSON.parseObject(resultPage, new TypeReference<>() {
         });
     }
 
@@ -73,7 +74,7 @@ public interface ShortLinkRemoteService {
      */
     default Result<String> getTitleByUrl(String url) {
         String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/title?url=" + url);
-        return JSON.parseObject(resultStr, new TypeReference<Result<String>>() {
+        return JSON.parseObject(resultStr, new TypeReference<>() {
         });
     }
 

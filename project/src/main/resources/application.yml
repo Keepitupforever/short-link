@@ -26,9 +26,11 @@ mybatis-plus:
       logic-not-delete-value: 0
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
 
 
 short-link:
   stats:
     locale:
       amap-key: cad72d8d90e88f059302d314f6a6af41
+
