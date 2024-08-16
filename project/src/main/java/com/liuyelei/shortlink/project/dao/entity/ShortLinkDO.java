@@ -117,4 +117,9 @@ public class ShortLinkDO extends BaseDO {
     private Integer todayUip;
 
 
+    /**
+     * 删除时间
+     */
+    private Long delTime;
+
 }
