@@ -26,7 +26,6 @@ public class ShortLinkUpdateReqDTO {
      */
     private String originGid;
 
-
     /**
      * 分组标识
      */
