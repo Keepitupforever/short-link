@@ -19,4 +19,4 @@ short-link:
   flow-limit:
     enable: true
     time-window: 1
-    max-access-count: 20
+    max-access-count: 2
