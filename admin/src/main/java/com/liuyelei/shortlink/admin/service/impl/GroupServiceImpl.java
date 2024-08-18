@@ -15,7 +15,7 @@ import com.liuyelei.shortlink.admin.dao.mapper.GroupMapper;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.liuyelei.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
-import com.liuyelei.shortlink.admin.remote.ShortLinkRemoteService;
+import com.liuyelei.shortlink.admin.remote.ShortLinkActualRemoteService;
 import com.liuyelei.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.liuyelei.shortlink.admin.service.GroupService;
 import com.liuyelei.shortlink.admin.toolkit.RandomGenerator;
@@ -40,16 +40,11 @@ import static com.liuyelei.shortlink.admin.common.constant.RedisCacheConstant.LO
 @RequiredArgsConstructor
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
 
+    private final ShortLinkActualRemoteService shortLinkActualRemoteService;
     private final RedissonClient redissonClient;
 
     @Value("${short-link.group.max-num}")
     private Integer groupMaxNum;
-
-    /**
-     * 后续重构为 SpringCloud Feign调用
-     */
-    ShortLinkRemoteService shortLinkRemoteService = new ShortLinkRemoteService() {
-    };
 
     @Override
     public void saveGroup(String groupName) {
@@ -92,7 +87,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .orderByDesc(GroupDO::getSortOrder, GroupDO::getUpdateTime);
         List<GroupDO> groupDOList = baseMapper.selectList(queryWrapper);
-        Result<List<ShortLinkGroupCountQueryRespDTO>> listResult = shortLinkRemoteService
+        Result<List<ShortLinkGroupCountQueryRespDTO>> listResult = shortLinkActualRemoteService
                 .listGroupShortLinkCount(groupDOList.stream().map(GroupDO::getGid).toList());
         List<ShortLinkGroupRespDTO> shortLinkGroupRespDTOList = BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
         shortLinkGroupRespDTOList.stream().forEach(each -> {
