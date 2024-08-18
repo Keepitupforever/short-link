@@ -41,4 +41,14 @@ public class RedisKeyConstant {
      * 短链接统计判断是否新IP缓存标识
      */
     public static final String SHORT_LINK_STATS_UIP_KEY = "short-link:stats:uip:";
+
+    /**
+     * 短链接监控消息保存队列Topic缓存标识
+     */
+    public static final String SHORT_LINK_STATS_STREAM_TOPIC_KEY = "short_link:stats-stream";
+
+    /**
+     * 短链接监控消息保存队列Group缓存标识
+     */
+    public static final String SHORT_LINK_STATS_STREAM_GROUP_KEY = "short_link:stats-stream:only-group";
 }
