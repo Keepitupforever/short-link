@@ -10,8 +10,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @SpringBootApplication(scanBasePackages = {
         "com.liuyelei.shortlink.admin",
-        "com.liuyelei.shortlink.project",
-        "com.liuyelei.shortlink.aggregation"
+        "com.liuyelei.shortlink.project"
 })
 @EnableDiscoveryClient
 @MapperScan(value = {
