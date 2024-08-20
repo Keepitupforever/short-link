@@ -21,7 +21,7 @@ public class SentinelRuleConfig implements InitializingBean {
         FlowRule createOrderRule = new FlowRule();
         createOrderRule.setResource("create_short-link");
         createOrderRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-        createOrderRule.setCount(1);
+        createOrderRule.setCount(10);
         rules.add(createOrderRule);
         FlowRuleManager.loadRules(rules);
     }
