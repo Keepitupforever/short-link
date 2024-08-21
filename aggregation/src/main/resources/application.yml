@@ -38,10 +38,12 @@ short-link:
   goto-domain:
     white-list:
       enable: true
-      names: '百度,知乎,掘金,博客园'
+      names: '百度,知乎,gitee,小红书,掘金,博客园'
       details:
         - baidu.com
         - zhihu.com
+        - gitee.com
+        - xiaohongshu.com
         - juejin.cn
         - cnblogs.com
 
