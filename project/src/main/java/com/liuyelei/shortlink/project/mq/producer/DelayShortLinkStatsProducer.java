@@ -15,6 +15,7 @@ import static com.liuyelei.shortlink.project.common.constant.RedisKeyConstant.DE
 /**
  * 延迟消费短链接统计发送者
  */
+@Deprecated
 @Component
 @RequiredArgsConstructor
 public class DelayShortLinkStatsProducer {
