@@ -11,6 +11,7 @@ local currentAccessCount = redis.call("INCR", accessKey)
 -- 设置键的过期时间
 if currentAccessCount == 1 then
     redis.call("EXPIRE", accessKey, timeWindow)
+end
 
 -- 返回当前访问次数
 return currentAccessCount
