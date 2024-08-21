@@ -15,13 +15,15 @@ import java.util.List;
 @Component
 public class SentinelRuleConfig implements InitializingBean {
 
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
         List<FlowRule> rules = new ArrayList<>();
         FlowRule createOrderRule = new FlowRule();
         createOrderRule.setResource("create_short-link");
         createOrderRule.setGrade(RuleConstant.FLOW_GRADE_QPS);
-        createOrderRule.setCount(10);
+        createOrderRule.setCount(20);
         rules.add(createOrderRule);
         FlowRuleManager.loadRules(rules);
     }
