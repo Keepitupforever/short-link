@@ -7,17 +7,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
- * 短链接今日统计实体
+ * 短链接分组实体
+ * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
-@TableName("t_link_stats_today")
 @Data
+@TableName("t_group")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LinkStatsTodayDO extends BaseDO {
+public class GroupDO extends BaseDO {
 
     /**
      * id
@@ -25,27 +24,22 @@ public class LinkStatsTodayDO extends BaseDO {
     private Long id;
 
     /**
-     * 短链接
+     * 分组标识
      */
-    private String fullShortUrl;
+    private String gid;
 
     /**
-     * 日期
+     * 分组名称
      */
-    private Date date;
+    private String name;
 
     /**
-     * 今日pv
+     * 创建分组用户名
      */
-    private Integer todayPv;
+    private String username;
 
     /**
-     * 今日uv
+     * 分组排序
      */
-    private Integer todayUv;
-
-    /**
-     * 今日ip数
-     */
-    private Integer todayUip;
+    private Integer sortOrder;
 }

@@ -43,6 +43,10 @@ public class ShortLinkPageRespDTO {
      */
     private Integer validDateType;
 
+    /**
+     * 启用标识 0：启用 1：未启用
+     */
+    private Integer enableStatus;
 
     /**
      * 有效期
