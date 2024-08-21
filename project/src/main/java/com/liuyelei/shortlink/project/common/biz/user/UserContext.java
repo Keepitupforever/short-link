@@ -9,6 +9,7 @@ import java.util.Optional;
  */
 public final class UserContext {
 
+
     private static final ThreadLocal<UserInfoDTO> USER_THREAD_LOCAL = new TransmittableThreadLocal<>();
 
     /**
@@ -49,7 +50,6 @@ public final class UserContext {
         UserInfoDTO userInfoDTO = USER_THREAD_LOCAL.get();
         return Optional.ofNullable(userInfoDTO).map(UserInfoDTO::getRealName).orElse(null);
     }
-
 
     /**
      * 清理用户上下文

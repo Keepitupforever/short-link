@@ -2,6 +2,7 @@ package com.liuyelei.shortlink.admin.remote;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.liuyelei.shortlink.admin.common.convention.result.Result;
+import com.liuyelei.shortlink.admin.config.OpenFeignConfiguration;
 import com.liuyelei.shortlink.admin.dto.req.RecycleBinRecoverReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.RecycleBinRemoveReqDTO;
 import com.liuyelei.shortlink.admin.dto.req.RecycleBinSaveReqDTO;
@@ -17,7 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(value = "short-link-project", url = "${aggregation.remote-url:}")
+@FeignClient(
+        value = "short-link-project",
+        url = "${aggregation.remote-url:}",
+        configuration = OpenFeignConfiguration.class
+)
 public interface ShortLinkActualRemoteService {
 
     /**

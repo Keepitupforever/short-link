@@ -30,5 +30,4 @@ public class UserInfoDTO {
      * 真实姓名
      */
     private String realName;
-
 }
