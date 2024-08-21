@@ -45,9 +45,9 @@ public class DelayShortLinkStatsConsumer implements InitializingBean {
                         try {
                             ShortLinkStatsRecordDTO statsRecord = delayedQueue.poll();
                             if (statsRecord != null) {
-                                if (!messageQueueIdempotentHandler.isMessageProcessed(statsRecord.getKeys())) {
+                                if (messageQueueIdempotentHandler.isMessageBeingConsumed(statsRecord.getKeys())) {
                                     // 判断当前这个消息是否执行完成
-                                    if (messageQueueIdempotentHandler.isMessageProcessed(statsRecord.getKeys())) {
+                                    if (messageQueueIdempotentHandler.isAccomplish(statsRecord.getKeys())) {
                                         return;
                                     }
                                     throw new ServiceException("消息未完成流程，需要消息队列重试");

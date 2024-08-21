@@ -8,30 +8,33 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 消息队列幂等处理
+ * 消息队列幂等处理器
+ * 公众号：马丁玩编程，回复：加群，添加马哥微信（备注：link）获取项目资料
  */
 @Component
 @RequiredArgsConstructor
 public class MessageQueueIdempotentHandler {
+
     private final StringRedisTemplate stringRedisTemplate;
+
     private static final String IDEMPOTENT_KEY_PREFIX = "short-link:idempotent:";
 
     /**
-     * 判断当前消息是否被消费过
+     * 判断当前消息是否消费过
      *
      * @param messageId 消息唯一标识
-     * @return 消息是否被消费过
+     * @return 消息是否消费过
      */
-    public boolean isMessageProcessed(String messageId) {
+    public boolean isMessageBeingConsumed(String messageId) {
         String key = IDEMPOTENT_KEY_PREFIX + messageId;
-        return Boolean.TRUE.equals(stringRedisTemplate.opsForValue().setIfAbsent(key, "0", 2, TimeUnit.MINUTES));
+        return Boolean.FALSE.equals(stringRedisTemplate.opsForValue().setIfAbsent(key, "0", 2, TimeUnit.MINUTES));
     }
 
     /**
-     * 判断当前消息是否消费完成
+     * 判断消息消费流程是否执行完成
      *
      * @param messageId 消息唯一标识
-     * @return 消息是否消费完成
+     * @return 消息是否执行完成
      */
     public boolean isAccomplish(String messageId) {
         String key = IDEMPOTENT_KEY_PREFIX + messageId;
@@ -39,7 +42,7 @@ public class MessageQueueIdempotentHandler {
     }
 
     /**
-     * 设置消息是否执行完成
+     * 设置消息流程执行完成
      *
      * @param messageId 消息唯一标识
      */
