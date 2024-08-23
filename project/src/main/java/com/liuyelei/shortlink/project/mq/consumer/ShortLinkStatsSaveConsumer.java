@@ -25,7 +25,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.liuyelei.shortlink.project.common.constant.RedisKeyConstant.LOCK_GID_UPDATE_KEY;
 import static com.liuyelei.shortlink.project.common.constant.ShortLinkConstant.AMAP_REMOTE_URL;
@@ -82,10 +86,23 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
     public void actualSaveShortLinkStats(ShortLinkStatsRecordDTO statsRecord) {
         String fullShortUrl = statsRecord.getFullShortUrl();
         RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(String.format(LOCK_GID_UPDATE_KEY, fullShortUrl));
-        // 使用读锁不阻塞其他线程更新短链接状态。
+        // 使用读锁不阻塞其他线程读取短链接状态。
         RLock rLock = readWriteLock.readLock();
         rLock.lock();
         try {
+            // 判断是不是UV
+            AtomicBoolean uvFirstFlag = new AtomicBoolean();
+            LambdaQueryWrapper<LinkAccessLogsDO> uvFirstQueryWrapper = Wrappers.lambdaQuery(LinkAccessLogsDO.class)
+                    .eq(LinkAccessLogsDO::getFullShortUrl, statsRecord.getFullShortUrl())
+                    .eq(LinkAccessLogsDO::getUser, statsRecord.getUv());
+            Long uvFirstCount = linkAccessLogsMapper.selectCount(uvFirstQueryWrapper);
+            uvFirstFlag.set(uvFirstCount != null && uvFirstCount == 0);
+            // 判断是不是UIP
+            AtomicBoolean uipFirstFlag = new AtomicBoolean();
+            LambdaQueryWrapper<LinkAccessLogsDO> uipFirstQueryWrapper = Wrappers.lambdaQuery(LinkAccessLogsDO.class).eq(LinkAccessLogsDO::getFullShortUrl, statsRecord.getFullShortUrl())
+                    .eq(LinkAccessLogsDO::getIp, statsRecord.getRemoteAddr());
+            Long uipFirstCount = linkAccessLogsMapper.selectCount(uipFirstQueryWrapper);
+            uipFirstFlag.set(uipFirstCount != null && uipFirstCount == 0);
             LambdaQueryWrapper<ShortLinkGotoDO> queryWrapper = Wrappers.lambdaQuery(ShortLinkGotoDO.class)
                     .eq(ShortLinkGotoDO::getFullShortUrl, fullShortUrl);
             ShortLinkGotoDO shortLinkGotoDO = shortLinkGotoMapper.selectOne(queryWrapper);
@@ -96,8 +113,8 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
             int weekValue = week.getIso8601Value();
             LinkAccessStatsDO linkAccessStatsDO = LinkAccessStatsDO.builder()
                     .pv(1)
-                    .uv(statsRecord.getUvFirstFlag() ? 1 : 0)
-                    .uip(statsRecord.getUipFirstFlag() ? 1 : 0)
+                    .uv(uvFirstFlag.get() ? 1 : 0)
+                    .uip(uipFirstFlag.get() ? 1 : 0)
                     .hour(hour)
                     .weekday(weekValue)
                     .fullShortUrl(fullShortUrl)
@@ -165,11 +182,11 @@ public class ShortLinkStatsSaveConsumer implements StreamListener<String, MapRec
                     .fullShortUrl(fullShortUrl)
                     .build();
             linkAccessLogsMapper.insert(linkAccessLogsDO);
-            shortLinkMapper.incrementStats(gid, fullShortUrl, 1, statsRecord.getUvFirstFlag() ? 1 : 0, statsRecord.getUipFirstFlag() ? 1 : 0);
+            shortLinkMapper.incrementStats(gid, fullShortUrl, 1, uvFirstFlag.get() ? 1 : 0, uipFirstFlag.get() ? 1 : 0);
             LinkStatsTodayDO linkStatsTodayDO = LinkStatsTodayDO.builder()
                     .todayPv(1)
-                    .todayUv(statsRecord.getUvFirstFlag() ? 1 : 0)
-                    .todayUip(statsRecord.getUipFirstFlag() ? 1 : 0)
+                    .todayUv(uvFirstFlag.get() ? 1 : 0)
+                    .todayUip(uipFirstFlag.get() ? 1 : 0)
                     .fullShortUrl(fullShortUrl)
                     .date(currentDate)
                     .build();

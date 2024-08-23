@@ -55,7 +55,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.liuyelei.shortlink.project.common.constant.RedisKeyConstant.*;
@@ -295,6 +294,7 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 rLock.unlock();
             }
         }
+        // TODO 将更新玩数据库后删除缓存的操作改为延迟删除
         if (!Objects.equals(hasShortLinkDO.getValidDateType(), requestParam.getValidDate())
                 || !Objects.equals(hasShortLinkDO.getValidDate(), requestParam.getValidDate())) {
             stringRedisTemplate.delete(String.format(GOTO_SHORT_LINK_KEY, requestParam.getFullShortUrl()));
@@ -451,7 +451,6 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
 
     private ShortLinkStatsRecordDTO buildLinkStatsRecordAndSetUser(String fullShortUrl, ServletRequest request, ServletResponse response) {
         // 通过Cookie判断是不是uv
-        AtomicBoolean uvFirstFlag = new AtomicBoolean();
         Cookie[] cookies = ((HttpServletRequest) request).getCookies();
         AtomicReference<String> uv = new AtomicReference<>();
         Runnable addResponseCookieTask = () -> {
@@ -460,19 +459,14 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
             uvCookie.setMaxAge(60 * 60 * 24 * 30);
             uvCookie.setPath(StrUtil.sub(fullShortUrl, fullShortUrl.indexOf("/"), fullShortUrl.length()));
             ((HttpServletResponse) response).addCookie(uvCookie);
-            uvFirstFlag.set(Boolean.TRUE);
-            stringRedisTemplate.opsForSet().add(SHORT_LINK_STATS_UV_KEY + fullShortUrl, uv.get());
         };
+
         if (ArrayUtil.isNotEmpty(cookies)) {
             Arrays.stream(cookies)
                     .filter(each -> Objects.equals(each.getName(), "uv"))
                     .findFirst()
                     .map(Cookie::getValue)
-                    .ifPresentOrElse(each -> {
-                        uv.set(each);
-                        Long uvAdded = stringRedisTemplate.opsForSet().add(SHORT_LINK_STATS_UV_KEY + fullShortUrl, each);
-                        uvFirstFlag.set(uvAdded != null && uvAdded > 0L);
-                    }, addResponseCookieTask);
+                    .ifPresentOrElse(uv::set, addResponseCookieTask);
         } else {
             addResponseCookieTask.run();
         }
@@ -481,13 +475,9 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
         String browser = LinkUtil.getBrowser(((HttpServletRequest) request));
         String device = LinkUtil.getDevice(((HttpServletRequest) request));
         String network = LinkUtil.getNetwork(((HttpServletRequest) request));
-        Long uipAdded = stringRedisTemplate.opsForSet().add(SHORT_LINK_STATS_UIP_KEY + fullShortUrl, remoteAddr);
-        boolean uipFirstFlag = uipAdded != null && uipAdded > 0L;
         return ShortLinkStatsRecordDTO.builder()
                 .fullShortUrl(fullShortUrl)
                 .uv(uv.get())
-                .uvFirstFlag(uvFirstFlag.get())
-                .uipFirstFlag(uipFirstFlag)
                 .remoteAddr(remoteAddr)
                 .os(os)
                 .browser(browser)

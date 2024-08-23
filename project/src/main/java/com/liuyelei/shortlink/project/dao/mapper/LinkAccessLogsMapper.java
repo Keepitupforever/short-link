@@ -203,5 +203,4 @@ public interface LinkAccessLogsMapper extends BaseMapper<LinkAccessLogsDO> {
             "    tlal.create_time DESC")
     IPage<LinkAccessLogsDO> selectGroupPage(@Param("param") ShortLinkGroupStatsAccessRecordReqDTO requestParam);
 
-
 }
